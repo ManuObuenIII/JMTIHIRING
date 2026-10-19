@@ -1,8 +1,8 @@
 /* JMTI Hiring Desk — service worker.
    Makes the launcher installable and keeps its shell (logo, icons, page) available offline.
    The Apps Script app itself (script.google.com) always needs internet and is never cached. */
-const CACHE = 'jmti-shell-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './jmti-logo.jpg', './icons/icon-192.png', './icons/icon-512.png'];
+const CACHE = 'jmti-shell-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './jmti-logo.jpg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
