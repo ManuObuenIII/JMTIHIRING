@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JMTI — We're Hiring</title>
+<meta name="description" content="J. Magtalas Trucking Inc. — online application for Truck Drivers and Helpers.">
+<link rel="icon" href="jmti-logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ==== CONFIG: your Apps Script web app link (Deploy → Web app → URL ending in /exec) ==== */
+  :root{
+    --navy:#071a36; --navy2:#0b2a5c; --brand:#0f3d7a; --brand2:#1e63c4; --sky:#1c9ac3;
+    --orange:#f08a1d; --gold:#f5b400; --gold2:#ffd04a; --ink:#1b2333; --muted:#6b7487; --line:#dfe3ec;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--navy);color:#fff;display:flex;flex-direction:column;min-height:100dvh;overflow:hidden}
+  .bg{position:fixed;inset:0;z-index:0;background:
+    radial-gradient(1100px 600px at 10% -10%,rgba(30,99,196,.55),transparent 60%),
+    radial-gradient(900px 600px at 110% 110%,rgba(240,138,29,.26),transparent 60%),
+    linear-gradient(160deg,#071a36 0%,#0b2a5c 55%,#071a36 100%)}
+  .bg svg{position:absolute;inset:0;width:100%;height:100%}
+  .bg .l1{animation:drift 18s ease-in-out infinite alternate}.bg .l2{animation:drift 26s ease-in-out infinite alternate-reverse}
+  @keyframes drift{from{transform:translate(-3%,0)}to{transform:translate(3%,-2%)}}
+
+  header{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:10px 14px;
+    background:linear-gradient(90deg,#071a36,#0f3d7a 60%,#1e63c4);box-shadow:0 10px 30px -14px rgba(0,0,0,.8);border-bottom:1px solid rgba(255,255,255,.12)}
+  header .lg{background:#fff;border-radius:12px;padding:4px 8px;flex:none}
+  header .lg img{display:block;height:36px}
+  header h1{font-family:Oswald,Inter,sans-serif;font-weight:700;font-size:16px;letter-spacing:.05em;text-transform:uppercase;margin:0;line-height:1.1}
+  header h1 span{color:var(--gold2)}
+  header p{margin:2px 0 0;font-size:12px;color:#bcd3f5}
+  header .open{margin-left:auto;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1b2333;font-weight:800;font-size:13px;text-decoration:none;
+    padding:9px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 10px 22px -8px rgba(245,180,0,.8);transition:transform .2s}
+  header .open:hover{transform:translateY(-1px)}
+
+  main{position:relative;z-index:1;flex:1;min-height:0;display:flex}
+  iframe{flex:1;width:100%;height:100%;border:0;background:#fff;opacity:0;transition:opacity .6s}
+  iframe.on{opacity:1}
+
+  /* loading / fallback overlay */
+  .veil{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(7,26,54,.0);pointer-events:none}
+  .veil .card{background:#fff;color:var(--ink);border-radius:24px;padding:28px 26px;text-align:center;width:min(420px,100%);
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.3);pointer-events:auto;transition:opacity .5s,transform .5s}
+  .veil.hide .card{opacity:0;transform:translateY(10px);pointer-events:none}
+  .veil .card img{height:64px;display:block;margin:0 auto 8px}
+  .veil .k{font-family:Oswald,Inter,sans-serif;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--orange);margin-left:.4em}
+  .veil h2{font-family:Oswald,Inter,sans-serif;font-weight:700;font-size:28px;letter-spacing:.04em;text-transform:uppercase;color:var(--navy);margin:2px 0 6px}
+  .veil p{color:var(--muted);font-size:14px;margin:0 0 16px;line-height:1.5}
+  .spin{width:34px;height:34px;border-radius:50%;border:4px solid #e3e8f1;border-top-color:var(--brand2);margin:0 auto;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1b2333;font-weight:800;font-size:16px;text-decoration:none;
+    padding:14px 24px;border-radius:14px;box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 14px 30px -10px rgba(245,180,0,.85);transition:transform .2s}
+  .btn:hover{transform:translateY(-1px)}
+  .fallback{display:none}
+  .veil.slow .spin{display:none}.veil.slow .fallback{display:block}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none">
+    <path class="l1" d="M-100 620 C 250 520, 450 760, 760 640 S 1250 520, 1540 660" stroke="url(#g1)" stroke-width="1.2"/>
+    <path class="l2" d="M-100 700 C 300 620, 520 860, 820 720 S 1300 600, 1540 740" stroke="url(#g2)" stroke-width="1"/>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f08a1d" stop-opacity="0"/><stop offset=".5" stop-color="#ffd04a"/><stop offset="1" stop-color="#f08a1d" stop-opacity="0"/></linearGradient>
+      <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#3aa6dd" stop-opacity="0"/><stop offset=".5" stop-color="#9fd6ff"/><stop offset="1" stop-color="#3aa6dd" stop-opacity="0"/></linearGradient>
+    </defs>
+  </svg>
+</div>
+
+<header>
+  <div class="lg"><img src="jmti-logo.jpg" alt="JMTI"></div>
+  <div>
+    <h1>J. Magtalas Trucking Inc. — <span>We're Hiring</span></h1>
+    <p>Truck Drivers at Helpers · Online application</p>
+  </div>
+  <a class="open" id="openTop" href="#" target="_blank" rel="noopener">Buksan sa bagong tab &#8599;</a>
+</header>
+
+<main>
+  <div class="veil" id="veil">
+    <div class="card">
+      <img src="jmti-logo.jpg" alt="JMTI">
+      <div class="k">Online Application</div>
+      <h2>Sandali lang…</h2>
+      <p id="msg">Binubuksan ang application form.</p>
+      <div class="spin"></div>
+      <div class="fallback">
+        <a class="btn" id="openBtn" href="#" target="_blank" rel="noopener">MAG-APPLY NA &#9656;</a>
+        <p style="margin:12px 0 0;font-size:12px">Kung hindi lumabas ang form sa itaas, i-tap ang button.</p>
+      </div>
+    </div>
+  </div>
+  <iframe id="app" title="JMTI Job Application" allow="camera; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</main>
+
+<script>
+  // ==== CONFIG ====
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbyDqCTLshhe0Nv8onjV-64n4zoroOp04-l4NhHPmPcggli2ZiH814LczuAYxu_Nh65BjA/exec';
+
+  const f = document.getElementById('app'), veil = document.getElementById('veil');
+  document.getElementById('openTop').href = APP_URL;
+  document.getElementById('openBtn').href = APP_URL;
+  f.src = APP_URL;
+  f.addEventListener('load', () => { f.classList.add('on'); setTimeout(() => veil.classList.add('hide'), 400); });
+  // If the form hasn't appeared after a few seconds (in-app browsers sometimes block embeds), offer the direct link.
+  setTimeout(() => { if (!veil.classList.contains('hide')) { veil.classList.add('slow'); document.getElementById('msg').textContent = 'Medyo matagal ang pag-load.'; } }, 7000);
+</script>
+</body>
+</html>

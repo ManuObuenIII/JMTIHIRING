@@ -1,0 +1,7 @@
+.clasp.json
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+# never commit real secrets
+*Secrets*.js

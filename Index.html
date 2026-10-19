@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#071a36; --navy2:#0b2a5c; --brand:#0f3d7a; --brand2:#1e63c4; --sky:#3aa6dd;
+    --gold:#f5b400; --gold2:#ffd04a; --orange:#f08a1d; --orange2:#ffb356;
+    --ink:#1b2333; --muted:#6b7487; --line:#dfe3ec; --ok:#1a8a4a; --bad:#c0392b;
+    --me:linear-gradient(135deg,#1e63c4,#0f3d7a);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--navy);min-height:100vh;overflow-x:hidden}
+
+  /* ================= Intro (unchanged feel) ================= */
+  #intro{position:fixed;inset:0;z-index:50;overflow:hidden;background:#06152c;display:flex;align-items:center;justify-content:center;
+    transition:transform .9s cubic-bezier(.7,0,.3,1),opacity .9s}
+  #intro.leave{transform:translateY(-100%);opacity:.4}
+  #intro .trucks{position:absolute;left:50%;top:0;width:min(640px,120vw);transform:translateX(-50%);
+    animation:pan 22s ease-in-out infinite alternate;filter:saturate(1.1)}
+  @keyframes pan{from{transform:translate(-50%,0) scale(1.05)}to{transform:translate(-50%,calc(-100% + 100vh)) scale(1.05)}}
+  #intro .shade{position:absolute;inset:0;background:
+    radial-gradient(ellipse at center,rgba(6,21,44,.35) 0%,rgba(6,21,44,.85) 75%),
+    linear-gradient(180deg,rgba(6,21,44,.2),rgba(6,21,44,.9))}
+  #intro .road{position:absolute;bottom:0;left:0;right:0;height:6px;background:repeating-linear-gradient(90deg,var(--gold) 0 40px,transparent 40px 80px);
+    animation:road .6s linear infinite;opacity:.8}
+  @keyframes road{to{background-position:-80px 0}}
+  .intro-box{position:relative;text-align:center;color:#fff;padding:24px;max-width:520px}
+  .logo-card{display:inline-block;background:#fff;border-radius:22px;padding:14px 20px;box-shadow:0 20px 60px rgba(0,0,0,.45);
+    opacity:0;transform:scale(.4) rotate(-6deg);animation:pop .9s .3s cubic-bezier(.2,1.6,.4,1) forwards}
+  .logo-card img{display:block;width:min(240px,58vw)}
+  @keyframes pop{to{opacity:1;transform:scale(1) rotate(0)}}
+  .hiring{font-family:Oswald,Inter,sans-serif;font-weight:700;font-size:clamp(40px,10vw,66px);letter-spacing:.03em;margin:22px 0 4px;line-height:1;
+    text-shadow:0 4px 24px rgba(0,0,0,.5);opacity:0;transform:translateY(24px);animation:up .7s 1s forwards}
+  .hiring span{color:var(--gold)}
+  .sub{font-size:16px;opacity:0;animation:up .7s 1.25s forwards;line-height:1.5}
+  .sub b{color:#9fd6ff}
+  @keyframes up{to{opacity:1;transform:none}}
+  .go{margin-top:26px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1b2333;font-weight:800;font-size:18px;border:0;border-radius:999px;
+    padding:16px 34px;cursor:pointer;box-shadow:0 10px 30px rgba(245,180,0,.45);opacity:0;animation:up .7s 1.5s forwards, pulse 1.6s 2.3s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 10px 30px rgba(245,180,0,.45)}50%{box-shadow:0 10px 30px rgba(245,180,0,.45),0 0 0 14px rgba(245,180,0,0)}}
+  .go:active{transform:scale(.96)}
+  .tap{font-size:12px;opacity:.6;margin-top:12px}
+  #intro.revving .intro-box{animation:shake .08s linear 12}
+  @keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(1px,-1px)}75%{transform:translate(-1px,1px)}}
+
+  /* ================= Page background: navy gradient + drifting thin curves ================= */
+  .bg{position:fixed;inset:0;z-index:0;background:
+    radial-gradient(1100px 600px at 15% -10%,rgba(30,99,196,.55),transparent 60%),
+    radial-gradient(900px 600px at 110% 110%,rgba(240,138,29,.28),transparent 60%),
+    linear-gradient(160deg,#071a36 0%,#0b2a5c 55%,#071a36 100%)}
+  .bg svg{position:absolute;inset:0;width:100%;height:100%}
+  .bg .l1{animation:drift 18s ease-in-out infinite alternate}
+  .bg .l2{animation:drift 26s ease-in-out infinite alternate-reverse}
+  .bg .l3{animation:drift 32s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translate(-3%,0) }to{transform:translate(3%,-2%)}}
+
+  /* ================= The "desk" (device card) ================= */
+  .stage{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}
+  .device{width:min(1120px,100%);height:min(820px,calc(100vh - 44px));min-height:560px;background:#fff;border-radius:30px;
+    display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08),0 40px 90px -30px rgba(0,0,0,.75),0 20px 40px -20px rgba(0,0,0,.6);
+    opacity:0;transform:translateY(24px) scale(.98);transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1)}
+  .device.on{opacity:1;transform:none}
+
+  /* ----- Left panel: brand + status card ----- */
+  .side{display:flex;flex-direction:column;min-height:0}
+  .brand{display:flex;align-items:center;gap:12px;padding:6px 4px 12px;position:relative}
+  .brand::after{content:"";position:absolute;left:4px;right:4px;bottom:0;height:3px;border-radius:3px;
+    background:linear-gradient(90deg,var(--orange),var(--gold2) 60%,transparent)}
+  .brand .lg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px 8px;flex:none;box-shadow:0 6px 16px -8px rgba(4,16,36,.35)}
+  .brand .lg img{display:block;height:46px}
+  .brand h1{font-family:Oswald,Inter,sans-serif;font-weight:700;font-size:19px;letter-spacing:.03em;margin:0;color:var(--navy);text-transform:uppercase;line-height:1.1}
+  .brand p{margin:3px 0 0;font-size:12px;color:var(--muted);line-height:1.35}
+
+  .hero{position:relative;flex:1;margin-top:14px;border-radius:24px;overflow:hidden;color:#fff;min-height:0;
+    background:linear-gradient(170deg,#0b2a5c 0%,#0f3d7a 45%,#071a36 100%);
+    box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 24px 50px -24px rgba(7,26,54,.9);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px 20px 34px;
+    border:1px solid rgba(255,255,255,.08)}
+  .hero .stars{position:absolute;inset:0;background:
+    radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,.7),transparent 2px),
+    radial-gradient(1px 1px at 70% 20%,rgba(255,255,255,.6),transparent 2px),
+    radial-gradient(1.5px 1.5px at 80% 60%,rgba(255,255,255,.5),transparent 2px),
+    radial-gradient(1px 1px at 35% 75%,rgba(255,255,255,.5),transparent 2px),
+    radial-gradient(1px 1px at 55% 50%,rgba(255,255,255,.4),transparent 2px),
+    radial-gradient(1.5px 1.5px at 15% 85%,rgba(255,255,255,.45),transparent 2px);
+    animation:twinkle 4s ease-in-out infinite alternate}
+  @keyframes twinkle{from{opacity:.5}to{opacity:1}}
+
+  .badge{position:relative;width:150px;height:150px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center}
+  .badge .fire{position:absolute;inset:-14px;border-radius:50%;
+    background:conic-gradient(from 0deg,rgba(245,180,0,0) 0deg,var(--gold) 40deg,var(--orange) 110deg,rgba(255,80,0,.0) 180deg,var(--gold2) 250deg,var(--orange) 320deg,rgba(245,180,0,0) 360deg);
+    filter:blur(10px);opacity:.85;animation:spin 6s linear infinite}
+  .badge .fire2{position:absolute;inset:-4px;border-radius:50%;
+    background:conic-gradient(from 180deg,transparent 0deg,var(--gold2) 60deg,transparent 140deg,var(--orange2) 230deg,transparent 320deg);
+    filter:blur(3px);opacity:.9;animation:spin 4s linear infinite reverse}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .badge .core{position:relative;width:118px;height:118px;border-radius:50%;display:grid;place-items:center;
+    background:radial-gradient(circle at 40% 35%,#fff3cf,#f7d98a 55%,#e8b94a);
+    box-shadow:0 0 0 4px rgba(255,255,255,.18),0 18px 40px -12px rgba(0,0,0,.6),0 0 30px rgba(245,180,0,.45)}
+  .badge .core svg{width:54px;height:54px;color:#8a5a00;transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+  .badge .prog{position:absolute;inset:-6px;transform:rotate(-90deg)}
+  .badge .prog circle{fill:none;stroke-width:5;stroke-linecap:round}
+  .badge .prog .track{stroke:rgba(255,255,255,.12)}
+  .badge .prog .bar{stroke:url(#pg);stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1);
+    filter:drop-shadow(0 0 6px rgba(255,208,74,.8))}
+  .hero-k{font-family:Oswald,Inter,sans-serif;font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:#ffd77a;opacity:.95;margin-left:.42em}
+  .hero-t{font-family:Oswald,Inter,sans-serif;font-weight:700;font-size:clamp(34px,4vw,44px);letter-spacing:.06em;text-transform:uppercase;line-height:1.05;margin:6px 0 8px;
+    text-shadow:0 6px 24px rgba(0,0,0,.45)}
+  .hero-s{font-size:13px;color:#bcd3f5;letter-spacing:.04em}
+  .hero-s b{color:#fff;font-weight:700}
+  .hero .wave{position:absolute;left:0;right:0;bottom:0;width:100%;height:110px;opacity:.95;pointer-events:none}
+  .hero .wave path{filter:drop-shadow(0 0 8px rgba(255,180,60,.8))}
+  .hero .wave .w1{animation:wave 7s ease-in-out infinite alternate}
+  .hero .wave .w2{animation:wave 11s ease-in-out infinite alternate-reverse;opacity:.5}
+  @keyframes wave{from{transform:translateX(-6%)}to{transform:translateX(2%)}}
+  .hero.done{background:linear-gradient(170deg,#0b2a5c 0%,#0f3d7a 40%,#13407a 70%,#071a36 100%)}
+  .hero.done .badge .core{background:radial-gradient(circle at 40% 35%,#eaffee,#8ee6a8 55%,#2bb86a)}
+  .hero.done .badge .core svg{color:#0b5a2b;transform:scale(1.08)}
+  .hero-foot{position:absolute;left:0;right:0;bottom:12px;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase}
+
+  /* ----- Right panel: chat desk ----- */
+  .desk{display:flex;flex-direction:column;min-height:0;border-radius:24px;overflow:hidden;border:1px solid var(--line);
+    box-shadow:0 18px 40px -24px rgba(4,16,36,.5)}
+  .desk-head{background:linear-gradient(90deg,#071a36,#0f3d7a 60%,#1e63c4);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
+  .desk-head .av{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;flex:none;
+    box-shadow:0 0 0 2px rgba(255,255,255,.25),0 8px 18px -8px rgba(0,0,0,.6);position:relative}
+  .desk-head .av img{width:34px;height:34px;object-fit:contain}
+  .desk-head .av::after{content:"";position:absolute;right:1px;bottom:1px;width:10px;height:10px;border-radius:50%;background:#2bd27a;border:2px solid #0f3d7a}
+  .desk-head .t{font-family:Oswald,Inter,sans-serif;font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;line-height:1.1}
+  .desk-head .t span{color:var(--gold2)}
+  .desk-head .s{font-size:12px;opacity:.8;margin-top:2px}
+  .desk-head .pill{margin-left:auto;font-size:12px;font-weight:700;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;padding:6px 12px;white-space:nowrap}
+  .desk-head .pill b{color:var(--gold2)}
+
+  /* chat wallpaper = logo theme: pale sky-blue, the logo's curved road with lane dashes, faint truck watermark */
+  .chatwrap{position:relative;flex:1;min-height:0;display:flex}
+  .wall{position:absolute;inset:0;overflow:hidden;pointer-events:none;
+    background:linear-gradient(160deg,#f4f9fe 0%,#e9f2fb 45%,#dfebf7 100%)}
+  .wall svg{position:absolute;inset:0;width:100%;height:100%}
+  .wall .road{fill:none;stroke:#1c9ac3;stroke-linecap:round}
+  .wall .lane{fill:none;stroke:#fff;stroke-width:7;stroke-linecap:round;stroke-dasharray:34 26;animation:lane 9s linear infinite}
+  .wall .edge{fill:none;stroke:#012a56;stroke-width:1.5;stroke-opacity:.14}
+  .wall .speed{stroke:#012a56;stroke-opacity:.07;stroke-width:3;stroke-linecap:round}
+  @keyframes lane{to{stroke-dashoffset:-120}}
+  .wall img{position:absolute;right:-4%;bottom:6%;width:64%;max-width:520px;opacity:.07;mix-blend-mode:multiply;transform:rotate(-4deg)}
+  .chat{position:relative;flex:1;min-height:0;overflow-y:auto;padding:18px 16px 10px;scroll-behavior:smooth}
+  .day{text-align:center;margin:4px 0 14px}
+  .day span{display:inline-block;font-size:11px;font-weight:600;color:#5a6680;background:rgba(255,255,255,.85);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;box-shadow:0 2px 6px rgba(4,16,36,.06)}
+
+  .msg{display:flex;align-items:flex-end;gap:8px;margin:0 0 10px;max-width:86%;
+    opacity:0;transform:translateY(14px) scale(.96);transform-origin:bottom left;
+    animation:bubble .42s cubic-bezier(.2,.9,.3,1.2) forwards}
+  @keyframes bubble{to{opacity:1;transform:none}}
+  .msg.me{margin-left:auto;flex-direction:row-reverse;transform-origin:bottom right}
+  .msg .av{width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex:none;
+    box-shadow:0 4px 10px -4px rgba(4,16,36,.35)}
+  .msg .av img{width:26px;height:26px;object-fit:contain}
+  .msg.me .av{display:none}
+  .bub{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;border-bottom-left-radius:6px;padding:11px 14px;
+    font-size:14.5px;line-height:1.5;box-shadow:0 6px 18px -10px rgba(4,16,36,.35);color:var(--ink)}
+  .bub .who{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--brand2);margin-bottom:3px}
+  .bub .tm{display:block;font-size:10px;color:#9aa3b5;margin-top:5px;text-align:right}
+  .msg.me .bub{background:var(--me);color:#fff;border:0;border-radius:18px;border-bottom-right-radius:6px;
+    box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 10px 24px -10px rgba(15,61,122,.7)}
+  .msg.me .bub .tm{color:rgba(255,255,255,.7)}
+  .msg.me .bub .who{color:#ffd77a}
+  .bub img.shot{display:block;width:200px;max-width:56vw;border-radius:12px;margin:2px 0 4px;box-shadow:0 8px 18px -8px rgba(0,0,0,.5)}
+  .bub .sum{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin-top:6px}
+  .bub .sum b{color:var(--brand);font-weight:700}
+  .bub .sum span{word-break:break-word}
+  .bub.okay{border-color:#9fdcb7;background:linear-gradient(180deg,#f1fbf4,#fff)}
+  .bub.oops{border-color:#f0b4ad;background:linear-gradient(180deg,#fff3f1,#fff)}
+  .bub a.callbtn{display:inline-flex;align-items:center;gap:8px;margin-top:8px;background:linear-gradient(135deg,#2bb86a,var(--ok));color:#fff;text-decoration:none;
+    font-weight:800;font-size:15px;padding:12px 18px;border-radius:14px;box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 12px 26px -10px rgba(26,138,74,.75);
+    transition:transform .2s}
+  .bub a.callbtn:hover{transform:translateY(-1px)}
+
+  .typing .bub{padding:12px 16px}
+  .dots{display:inline-flex;gap:5px;align-items:center;height:12px}
+  .dots i{width:7px;height:7px;border-radius:50%;background:#9bb3d6;animation:bounce 1.1s infinite ease-in-out}
+  .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-5px);opacity:1}}
+
+  /* quick replies */
+  .quick{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:0 14px;background:#fff;border-top:1px solid var(--line);
+    max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.2,.8,.2,1),padding .3s}
+  .quick.on{max-height:240px;padding:12px 14px 2px}
+  .chip{border:1.5px solid #cfdcf2;background:#fff;color:var(--brand);font:inherit;font-size:14px;font-weight:600;padding:10px 16px;border-radius:999px;cursor:pointer;
+    box-shadow:0 4px 12px -6px rgba(15,61,122,.35);transition:all .22s cubic-bezier(.2,.8,.2,1);
+    opacity:0;transform:translateY(8px);animation:up .35s forwards}
+  .chip:nth-child(2){animation-delay:.05s}.chip:nth-child(3){animation-delay:.1s}.chip:nth-child(4){animation-delay:.15s}.chip:nth-child(5){animation-delay:.2s}.chip:nth-child(6){animation-delay:.25s}
+  .chip:hover{background:#eef4fd;transform:translateY(-1px);box-shadow:0 8px 18px -8px rgba(15,61,122,.5)}
+  .chip.sel{background:var(--me);color:#fff;border-color:transparent;box-shadow:0 8px 20px -8px rgba(15,61,122,.75)}
+  .chip.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1b2333;border-color:transparent;box-shadow:0 10px 22px -8px rgba(245,180,0,.7)}
+  .chip.ghost{background:#fff;color:#5a6680;border-style:dashed}
+  .chip.done{background:linear-gradient(135deg,#2bb86a,var(--ok));color:#fff;border-color:transparent}
+
+  /* composer */
+  .composer{display:flex;align-items:center;gap:10px;padding:12px 14px 14px;background:#fff;border-top:1px solid var(--line)}
+  .composer .field{flex:1;display:flex;align-items:center;gap:8px;min-width:0;background:#f4f6fa;border:1.5px solid var(--line);border-radius:999px;padding:4px 6px 4px 16px;
+    transition:box-shadow .25s,border-color .25s,background .25s}
+  .composer .field:focus-within{border-color:#9cc3f2;background:#fff;box-shadow:0 0 0 4px rgba(30,99,196,.14)}
+  .composer input,.composer select{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:15px;color:var(--ink);padding:10px 0;outline:none}
+  .composer select{cursor:pointer;padding-right:6px}
+  .composer .field.off{opacity:.55}
+  .composer .field.off input{cursor:not-allowed}
+  .send{width:48px;height:48px;border-radius:50%;border:0;flex:none;display:grid;place-items:center;cursor:pointer;color:#1b2333;
+    background:linear-gradient(135deg,var(--gold),var(--orange));box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 24px -8px rgba(240,138,29,.8);
+    transition:transform .2s cubic-bezier(.2,1.4,.4,1),box-shadow .2s,opacity .2s}
+  .send svg{width:22px;height:22px}
+  .send:hover{transform:scale(1.06)}
+  .send:active{transform:scale(.94)}
+  .send:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .upl{display:inline-flex;align-items:center;gap:8px;background:var(--me);color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;font-size:14px;cursor:pointer;
+    box-shadow:0 10px 22px -8px rgba(15,61,122,.75);transition:transform .2s}
+  .upl:hover{transform:translateY(-1px)}
+  .upl input{display:none}
+  .upl svg{width:20px;height:20px}
+  .multi-count{font-size:12px;color:var(--muted);align-self:center;margin-right:auto}
+
+  /* toast / mute */
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:12px 18px;border-radius:12px;color:#fff;font-size:14px;display:none;z-index:60;max-width:90vw;
+    background:rgba(192,57,43,.92);box-shadow:0 12px 30px -8px rgba(0,0,0,.5)}
+  #mute{position:fixed;right:14px;bottom:14px;z-index:70;width:46px;height:46px;border-radius:50%;padding:0;font-size:20px;color:#fff;border:1px solid rgba(255,255,255,.35);cursor:pointer;
+    background:rgba(255,255,255,.14);box-shadow:0 10px 24px -6px rgba(0,0,0,.5)}
+
+  /* ----- Mobile: chat takes the screen ----- */
+  @media(max-width:900px){
+    .stage{padding:0;min-height:100dvh;align-items:stretch}
+    .device{width:100%;height:100dvh;min-height:0;border-radius:0;grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:10px;padding:10px;transform:none}
+    .side{flex-direction:row;align-items:center;gap:10px}
+    .brand{flex:1;padding:4px 44px 8px 0}
+    .brand .lg img{height:36px}
+    .brand h1{font-size:16px}
+    .hero{display:none}
+    .hero.done{display:flex;position:fixed;inset:auto 14px 90px 14px;z-index:40;margin:0;min-height:0;padding:18px 16px 26px;border-radius:22px;
+      box-shadow:0 30px 60px -20px rgba(0,0,0,.7);animation:bubble .6s cubic-bezier(.2,.9,.3,1.2) both;flex-direction:row;text-align:left;gap:14px}
+    .hero.done .badge{width:84px;height:84px;margin:0;flex:none}
+    .hero.done .badge .core{width:66px;height:66px}
+    .hero.done .badge .core svg{width:32px;height:32px}
+    .hero.done .hero-txt{flex:1;min-width:0}
+    .hero.done .hero-k{font-size:11px;letter-spacing:.3em}
+    .hero.done .hero-t{font-size:28px;margin:2px 0 4px}
+    .hero.done .wave,.hero.done .hero-foot{display:none}
+    .hero.done .x{display:grid}
+    .desk{border-radius:18px}
+    .desk-head .s{display:none}
+    .desk-head .t{font-size:14px}
+    .msg{max-width:92%}
+    .bub .sum{grid-template-columns:1fr}
+    #mute{top:12px;bottom:auto;right:12px;width:36px;height:36px;font-size:15px;background:rgba(15,61,122,.9)}
+  }
+  .hero .x{display:none;position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;place-items:center;font-size:16px;cursor:pointer}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== Intro ===== -->
+<div id="intro">
+  <img class="trucks" src="data:image/jpeg;base64,<?!= TRUCKS_B64 ?>" alt="">
+  <div class="shade"></div>
+  <div class="road"></div>
+  <div class="intro-box">
+    <div class="logo-card"><img src="data:image/jpeg;base64,<?!= LOGO_B64 ?>" alt="JMTI"></div>
+    <div class="hiring">WE'RE <span>HIRING!</span></div>
+    <div class="sub">J. Magtalas Trucking Inc.<br>Naghahanap ng <b>Truck Drivers</b> at <b>Helpers</b></div>
+    <button class="go" id="goBtn">MAG-APPLY NA &#9656;</button>
+    <div class="tap">I-tap para magsimula — may kakausap sa iyo mula sa HR</div>
+  </div>
+</div>
+
+<button id="mute" title="Sound on/off" aria-label="Sound on/off">&#128266;</button>
+
+<!-- ===== Background curves ===== -->
+<div class="bg" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none">
+    <path class="l1" d="M-100 620 C 250 520, 450 760, 760 640 S 1250 520, 1540 660" stroke="url(#g1)" stroke-width="1.2"/>
+    <path class="l2" d="M-100 700 C 300 620, 520 860, 820 720 S 1300 600, 1540 740" stroke="url(#g2)" stroke-width="1"/>
+    <path class="l3" d="M-100 180 C 300 80, 600 300, 900 160 S 1300 60, 1540 200" stroke="url(#g1)" stroke-width="1" opacity=".6"/>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f08a1d" stop-opacity="0"/><stop offset=".5" stop-color="#ffd04a"/><stop offset="1" stop-color="#f08a1d" stop-opacity="0"/></linearGradient>
+      <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#3aa6dd" stop-opacity="0"/><stop offset=".5" stop-color="#9fd6ff"/><stop offset="1" stop-color="#3aa6dd" stop-opacity="0"/></linearGradient>
+    </defs>
+  </svg>
+</div>
+
+<!-- ===== Desk ===== -->
+<div class="stage">
+  <div class="device" id="device">
+
+    <!-- Left: brand + status -->
+    <aside class="side">
+      <div class="brand">
+        <div class="lg"><img src="data:image/jpeg;base64,<?!= LOGO_B64 ?>" alt="JMTI"></div>
+        <div>
+          <h1>J. Magtalas Trucking Inc.</h1>
+          <p>Job Application · Driver &amp; Helper<br>Online Interview Desk</p>
+        </div>
+      </div>
+
+      <div class="hero" id="hero">
+        <div class="stars"></div>
+        <div class="x" id="heroX">&#10005;</div>
+        <div class="badge">
+          <div class="fire"></div><div class="fire2"></div>
+          <svg class="prog" viewBox="0 0 120 120">
+            <defs><linearGradient id="pg" x1="0" x2="1"><stop offset="0" stop-color="#ffd04a"/><stop offset="1" stop-color="#f08a1d"/></linearGradient></defs>
+            <circle class="track" cx="60" cy="60" r="56" pathLength="1"/>
+            <circle class="bar" id="progBar" cx="60" cy="60" r="56" pathLength="1"/>
+          </svg>
+          <div class="core">
+            <svg id="badgeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>
+            </svg>
+          </div>
+        </div>
+        <div class="hero-txt">
+          <div class="hero-k" id="heroK">Interview</div>
+          <div class="hero-t" id="heroT">Let's Begin</div>
+          <div class="hero-s" id="heroS"><b>0</b>/<span id="heroTotal">6</span> answered</div>
+        </div>
+        <svg class="wave" viewBox="0 0 360 110" preserveAspectRatio="none" fill="none">
+          <path class="w1" d="M-20 70 C 60 30, 120 100, 200 60 S 320 30, 400 70" stroke="url(#wg)" stroke-width="2"/>
+          <path class="w2" d="M-20 85 C 80 50, 140 110, 220 75 S 330 45, 400 85" stroke="url(#wg)" stroke-width="1.2"/>
+          <defs><linearGradient id="wg" x1="0" x2="1"><stop offset="0" stop-color="#f08a1d" stop-opacity="0"/><stop offset=".5" stop-color="#ffd04a"/><stop offset="1" stop-color="#f08a1d" stop-opacity="0"/></linearGradient></defs>
+        </svg>
+        <div class="hero-foot">JMTI HR · Hiring Desk</div>
+      </div>
+    </aside>
+
+    <!-- Right: chat -->
+    <section class="desk">
+      <div class="desk-head">
+        <div class="av"><img src="data:image/jpeg;base64,<?!= LOGO_B64 ?>" alt=""></div>
+        <div>
+          <div class="t">JMTI <span>Hiring</span> Desk</div>
+          <div class="s">HR Interviewer · online ngayon</div>
+        </div>
+        <div class="pill"><b id="pillN">0</b>/<span id="pillT">6</span> answered</div>
+      </div>
+
+      <div class="chatwrap">
+        <div class="wall" aria-hidden="true">
+          <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+            <!-- the logo's swooping road -->
+            <path class="edge" style="stroke-width:124;stroke-opacity:.10" d="M -60 660 C 140 430, 300 330, 520 210 S 800 40, 900 -60"/>
+            <path class="road" style="stroke-width:118;stroke-opacity:.13" d="M -60 660 C 140 430, 300 330, 520 210 S 800 40, 900 -60"/>
+            <path class="lane" d="M -60 660 C 140 430, 300 330, 520 210 S 800 40, 900 -60"/>
+            <!-- second, thinner road underneath -->
+            <path class="road" style="stroke-width:48;stroke-opacity:.09" d="M -40 740 C 180 540, 360 450, 600 330 S 860 170, 940 60"/>
+            <path class="lane" style="stroke-width:4;stroke-dasharray:22 18;animation-duration:13s" d="M -40 740 C 180 540, 360 450, 600 330 S 860 170, 940 60"/>
+            <!-- speed lines, like the right side of the logo -->
+            <g class="speed"><path d="M560 120H760"/><path d="M600 150H790"/><path d="M640 180H780"/><path d="M620 90H740"/></g>
+          </svg>
+          <img id="wm" alt="">
+        </div>
+        <div class="chat" id="chat">
+          <div class="day"><span id="dayLbl">Today</span></div>
+        </div>
+      </div>
+
+      <div class="quick" id="quick"></div>
+
+      <div class="composer" id="composer">
+        <div class="field" id="field">
+          <input type="text" id="inp" placeholder="I-type ang sagot mo…" autocomplete="off">
+        </div>
+        <button class="send" id="sendBtn" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 20 4l-4 16-5-6z"/><path d="M11 14 20 4"/></svg>
+        </button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  /* ======== Local preview shim (ignored inside Apps Script, where `google` exists) ======== */
+  (function(){
+    if (typeof google !== 'undefined' && google.script) return;
+    const prov=[{code:'NCR',name:'Metro Manila (NCR)'},{code:'P1',name:'Bulacan'},{code:'P2',name:'Pampanga'},{code:'P3',name:'Nueva Ecija'}];
+    const city={NCR:[{code:'C1',name:'Caloocan City'},{code:'C2',name:'Quezon City'}],P1:[{code:'C3',name:'Malolos City'},{code:'C4',name:'San Jose del Monte'}],P2:[{code:'C5',name:'Angeles City'}],P3:[{code:'C6',name:'Cabanatuan City'}]};
+    const bgy=[{code:'B1',name:'Poblacion'},{code:'B2',name:'San Isidro'},{code:'B3',name:'Santa Cruz'}];
+    function runner(){ const h={}; const o={
+      withSuccessHandler(f){h.ok=f;return o}, withFailureHandler(f){h.err=f;return o},
+      getProvinces(){setTimeout(()=>h.ok(prov),500)}, getCities(p){setTimeout(()=>h.ok(city[p]||[]),400)}, getBarangays(){setTimeout(()=>h.ok(bgy),400)},
+      submitApplicant(p){setTimeout(()=>h.ok({ok:true,no:128,name:p.name,emailed:!!p.email}),1600)} }; return o; }
+    window.google={script:{get run(){return runner()}}};
+    const ph='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="100"><rect width="240" height="100" rx="12" fill="#0f3d7a"/><text x="120" y="62" font-family="Arial" font-weight="bold" font-size="40" fill="#f5b400" text-anchor="middle">JMTI</text></svg>');
+    const ph2='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1200"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e63c4"/><stop offset="1" stop-color="#06152c"/></linearGradient></defs><rect width="640" height="1200" fill="url(#g)"/></svg>');
+    // NOTE: never write the two characters "<" + "?" together in this file — Apps Script treats them as a template tag, even inside script.
+    document.querySelectorAll('img').forEach(im=>{ const s=im.getAttribute('src')||''; if(s.indexOf('_B64')>-1) im.src = im.classList.contains('trucks')?ph2:ph; });
+  })();
+
+  /* ================= Sound effects (Web Audio) ================= */
+  let ctx = null, muted = false;
+  try { muted = localStorage.getItem('jmti_muted') === '1'; } catch(_) {}
+  function ac(){ if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); return ctx; }
+  function setMuteIcon(){ $('mute').innerHTML = muted ? '&#128263;' : '&#128266;'; }
+  setMuteIcon();
+  $('mute').addEventListener('click', () => { muted = !muted; setMuteIcon(); try{localStorage.setItem('jmti_muted', muted?'1':'0')}catch(_){}; if(!muted) sfx.click(); });
+  function noiseBuf(c, secs){ const b = c.createBuffer(1, c.sampleRate * secs, c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; }
+  const sfx = {
+    engine(){
+      if (muted) return; const c = ac(), t = c.currentTime, dur = 2.2;
+      const out = c.createGain(); out.connect(c.destination);
+      out.gain.setValueAtTime(0.0001, t); out.gain.exponentialRampToValueAtTime(0.5, t + 0.15); out.gain.setValueAtTime(0.5, t + 1.5); out.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 6; lp.connect(out);
+      lp.frequency.setValueAtTime(200, t); lp.frequency.linearRampToValueAtTime(900, t + 0.9); lp.frequency.linearRampToValueAtTime(350, t + dur);
+      [1, 2.01].forEach((m, i) => { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(32 * m, t); o.frequency.exponentialRampToValueAtTime(95 * m, t + 0.9); o.frequency.exponentialRampToValueAtTime(55 * m, t + dur);
+        const g = c.createGain(); g.gain.value = i ? 0.35 : 0.8; o.connect(g); g.connect(lp); o.start(t); o.stop(t + dur); });
+      const n = c.createBufferSource(); n.buffer = noiseBuf(c, dur); const ng = c.createGain(); ng.gain.value = 0.25;
+      const lfo = c.createOscillator(); lfo.frequency.setValueAtTime(14, t); lfo.frequency.linearRampToValueAtTime(40, t + 0.9); lfo.frequency.linearRampToValueAtTime(24, t + dur);
+      const lg = c.createGain(); lg.gain.value = 0.25; lfo.connect(lg); lg.connect(ng.gain); n.connect(ng); ng.connect(lp); n.start(t); lfo.start(t); lfo.stop(t + dur);
+    },
+    horn(delay = 0){
+      if (muted) return; const c = ac(), t0 = c.currentTime + delay;
+      [[0, 0.28], [0.38, 0.6]].forEach(([s, len]) => { const t = t0 + s, g = c.createGain(), lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; lp.connect(g); g.connect(c.destination);
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.03); g.gain.setValueAtTime(0.22, t + len - 0.06); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+        [311, 370, 466].forEach(f => { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(t); o.stop(t + len); }); });
+    },
+    hiss(delay = 0){
+      if (muted) return; const c = ac(), t = c.currentTime + delay; const n = c.createBufferSource(); n.buffer = noiseBuf(c, 0.7);
+      const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3000; const g = c.createGain(); g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+      n.connect(hp); hp.connect(g); g.connect(c.destination); n.start(t);
+    },
+    click(){
+      if (muted) return; const c = ac(), t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(500, t + 0.05);
+      g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.07);
+    },
+    pop(){ // incoming message
+      if (muted) return; const c = ac(), t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(620, t); o.frequency.exponentialRampToValueAtTime(880, t + 0.08);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.24);
+    },
+    swoosh(){ // outgoing message
+      if (muted) return; const c = ac(), t = c.currentTime, n = c.createBufferSource(); n.buffer = noiseBuf(c, 0.25);
+      const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2; bp.frequency.setValueAtTime(900, t); bp.frequency.exponentialRampToValueAtTime(3200, t + 0.2);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.12, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+      n.connect(bp); bp.connect(g); g.connect(c.destination); n.start(t);
+    },
+    success(){
+      if (muted) return; const c = ac(), t = c.currentTime;
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => { const o = c.createOscillator(), g = c.createGain(), s = t + i * 0.11; o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.25, s + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.5); o.connect(g); g.connect(c.destination); o.start(s); o.stop(s + 0.55); });
+      this.horn(0.6);
+    },
+    error(){
+      if (muted) return; const c = ac(), t = c.currentTime;
+      [0, 0.16].forEach(s => { const o = c.createOscillator(), g = c.createGain(); o.type = 'square'; o.frequency.value = 150;
+        g.gain.setValueAtTime(0.1, t + s); g.gain.exponentialRampToValueAtTime(0.0001, t + s + 0.13); o.connect(g); g.connect(c.destination); o.start(t + s); o.stop(t + s + 0.14); });
+    }
+  };
+
+  /* ================= Intro ================= */
+  $('goBtn').addEventListener('click', () => {
+    const intro = $('intro');
+    sfx.engine(); sfx.horn(1.1); sfx.hiss(1.9);
+    intro.classList.add('revving');
+    setTimeout(() => { intro.classList.add('leave'); $('device').classList.add('on'); }, 1500);
+    setTimeout(() => { intro.style.display = 'none'; }, 2450);
+    setTimeout(startInterview, 2000);
+  });
+
+  /* ================= Chat helpers ================= */
+  const chat = $('chat'), quick = $('quick'), inp = $('inp'), field = $('field'), sendBtn = $('sendBtn');
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const now = () => new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const LOGO = document.querySelector('.desk-head .av img').src;
+  $('wm').src = LOGO; // watermark reuses the logo already on the page
+  try { $('dayLbl').textContent = new Date().toLocaleDateString('en-PH', { weekday: 'long', month: 'long', day: 'numeric' }); } catch(_) {}
+
+  function scrollDown(){ requestAnimationFrame(() => { chat.scrollTop = chat.scrollHeight; }); }
+  function bubble(html, me, cls){
+    const m = document.createElement('div'); m.className = 'msg ' + (me ? 'me' : 'bot');
+    m.innerHTML = (me ? '' : '<div class="av"><img src="' + LOGO + '" alt=""></div>') +
+      '<div class="bub' + (cls ? ' ' + cls : '') + '">' + (me ? '' : '<div class="who">JMTI HR</div>') + html + '<span class="tm">' + now() + '</span></div>';
+    chat.appendChild(m); scrollDown(); return m;
+  }
+  async function say(html, cls, delay){
+    const t = document.createElement('div'); t.className = 'msg bot typing';
+    t.innerHTML = '<div class="av"><img src="' + LOGO + '" alt=""></div><div class="bub"><span class="dots"><i></i><i></i><i></i></span></div>';
+    chat.appendChild(t); scrollDown();
+    await sleep(delay != null ? delay : Math.min(1600, 450 + html.replace(/<[^>]+>/g, '').length * 14));
+    t.remove(); sfx.pop(); return bubble(html, false, cls);
+  }
+  function me(html, cls){ sfx.swoosh(); return bubble(html, true, cls); }
+  function toast(msg){ const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(()=> t.style.display='none', 4500); }
+
+  /* ----- composer modes ----- */
+  let resolveInput = null, mode = 'off';
+  function setField(html, on){ field.innerHTML = html; field.classList.toggle('off', !on); }
+  function closeQuick(){ quick.classList.remove('on'); setTimeout(() => { if (!quick.classList.contains('on')) quick.innerHTML = ''; }, 450); }
+  function lockComposer(){ mode = 'off'; setField('<input type="text" id="inp" placeholder="Sandali lang…" disabled>', false); sendBtn.disabled = true; closeQuick(); }
+  lockComposer();
+
+  // free-text question. opts: {type, inputmode, placeholder, validate(v)->error|null, optional, skipLabel}
+  function askText(opts){
+    return new Promise(res => {
+      mode = 'text';
+      setField('<input type="' + (opts.type || 'text') + '" id="inp" ' + (opts.inputmode ? 'inputmode="' + opts.inputmode + '" ' : '') +
+        'placeholder="' + esc(opts.placeholder || 'I-type ang sagot mo…') + '" autocomplete="off"' + (opts.min != null ? ' min="' + opts.min + '"' : '') + (opts.max != null ? ' max="' + opts.max + '"' : '') + '>', true);
+      sendBtn.disabled = false;
+      const i = $('inp'); setTimeout(() => i.focus(), 150);
+      if (opts.optional) chips([{ label: opts.skipLabel || 'Laktawan', value: '', ghost: true }], v => { me(opts.skipLabel || 'Laktawan'); finish(''); });
+      function finish(v){ resolveInput = null; lockComposer(); res(v); }
+      resolveInput = () => {
+        const v = i.value.trim();
+        if (!v && opts.optional) { me(opts.skipLabel || 'Laktawan'); return finish(''); }
+        if (!v) { sfx.error(); i.focus(); return; }
+        const err = opts.validate ? opts.validate(v) : null;
+        if (err) { sfx.error(); me(esc(v)); i.value = ''; say(err, 'oops', 500); setTimeout(() => i.focus(), 200); return; }
+        me(esc(v)); finish(v);
+      };
+    });
+  }
+  // quick-reply chips. items: [{label, value, gold, ghost}]
+  function chips(items, onPick){
+    quick.innerHTML = '';
+    items.forEach(it => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (it.gold ? ' gold' : '') + (it.ghost ? ' ghost' : '') + (it.done ? ' done' : '');
+      b.innerHTML = it.label; b.addEventListener('click', () => { sfx.click(); onPick(it, b); }); quick.appendChild(b);
+    });
+    requestAnimationFrame(() => quick.classList.add('on'));
+    setTimeout(scrollDown, 260); setTimeout(scrollDown, 520); // keep the last bubble visible while the chip bar slides up
+  }
+  function askChips(items){
+    return new Promise(res => { mode = 'chips'; lockComposer(); chips(items, it => { me(it.label); closeQuick(); res(it.value); }); });
+  }
+  // multi-select chips with a "Tapos na" button
+  function askMulti(items, preset){
+    return new Promise(res => {
+      mode = 'multi'; lockComposer();
+      const sel = new Set(preset || []);
+      const list = items.map(x => ({ label: x, value: x }));
+      list.push({ label: '&#10003; Tapos na', value: '__done', done: true });
+      chips(list, (it, b) => {
+        if (it.value === '__done') {
+          const arr = [...sel]; me(arr.length ? arr.join(', ') : 'Wala pa'); closeQuick(); return res(arr);
+        }
+        if (sel.has(it.value)) { sel.delete(it.value); b.classList.remove('sel'); } else { sel.add(it.value); b.classList.add('sel'); }
+      });
+      // reflect preset
+      [...quick.children].forEach(b => { const v = b.textContent.trim(); if (sel.has(v)) b.classList.add('sel'); });
+    });
+  }
+  // dropdown in the composer (province/city/barangay)
+  function askSelect(placeholder, loader, optional){
+    return new Promise(res => {
+      mode = 'select';
+      setField('<select id="sel"><option value="">Loading…</option></select>', true);
+      sendBtn.disabled = true;
+      const s = $('sel'); let done = false;
+      function finish(v){ if (done) return; done = true; lockComposer(); res(v); }
+      if (optional) chips([{ label: 'Laktawan', value: '', ghost: true }], () => { me('Laktawan'); finish(null); });
+      loader(list => {
+        if (done) return;
+        s.innerHTML = '<option value="">' + esc(placeholder) + '</option>' + list.map(x => '<option value="' + esc(x.code) + '">' + esc(x.name) + '</option>').join('');
+        s.addEventListener('change', () => { if (s.value) sendBtn.disabled = false; });
+        resolveInput = () => { if (!s.value) { sfx.error(); return; } const o = s.options[s.selectedIndex]; me(esc(o.text)); closeQuick(); finish({ code: s.value, name: o.text }); };
+      }, err => { if (done) return; say('Hindi ma-load ang listahan (' + esc(err) + '). Laktawan muna natin.', 'oops', 300); finish(null); });
+    });
+  }
+  // photo upload
+  function askFile(){
+    return new Promise(res => {
+      mode = 'file';
+      setField('<label class="upl"><input type="file" id="fileInp" accept="image/*"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M5.5 16.5c.9-1.6 2.1-2.4 3.5-2.4s2.6.8 3.5 2.4M14.5 10h4M14.5 13.5h3"/></svg> I-upload ang litrato</label><span class="multi-count">JPG/PNG · max 8MB</span>', true);
+      sendBtn.disabled = true;
+      chips([{ label: 'Mamaya na lang', value: '', ghost: true }], () => { me('Mamaya na lang'); closeQuick(); lockComposer(); res(null); });
+      $('fileInp').addEventListener('change', e => {
+        const file = e.target.files[0]; if (!file) return;
+        if (!/^image\//.test(file.type)) { sfx.error(); toast('Litrato lang ang puwede (JPG o PNG).'); e.target.value = ''; return; }
+        if (file.size > 8 * 1024 * 1024) { sfx.error(); toast('Masyadong malaki ang file (max 8MB).'); e.target.value = ''; return; }
+        const r = new FileReader();
+        r.onload = () => {
+          me('<img class="shot" src="' + r.result + '" alt="ID">' + esc(file.name));
+          closeQuick(); lockComposer();
+          res({ name: file.name, mimeType: file.type, data: r.result.split(',')[1], preview: r.result });
+        };
+        r.readAsDataURL(file);
+      });
+    });
+  }
+  sendBtn.addEventListener('click', () => { if (resolveInput) resolveInput(); });
+  field.addEventListener('keydown', e => { if (e.key === 'Enter' && resolveInput && mode === 'text') { e.preventDefault(); resolveInput(); } });
+
+  /* ================= Progress (left card + pill) ================= */
+  const A = {}; // answers
+  const FIELDS = () => ['position', 'name', 'age', 'contact', 'email', 'address', 'idPhoto'].concat(A.position === 'Driver' ? ['licenseNo', 'years', 'trucks'] : []);
+  function progress(){
+    const f = FIELDS(), n = f.filter(k => A[k] !== undefined).length;
+    $('heroTotal').textContent = f.length; $('pillT').textContent = f.length;
+    $('heroS').querySelector('b').textContent = n; $('pillN').textContent = n;
+    $('progBar').style.strokeDashoffset = 1 - (f.length ? n / f.length : 0);
+    if (n === 0) { $('heroK').textContent = 'Interview'; $('heroT').textContent = "Let's Begin"; }
+    else if (n < f.length) { $('heroK').textContent = 'In Progress'; $('heroT').textContent = 'Keep Going'; }
+    else { $('heroK').textContent = 'Almost There'; $('heroT').textContent = 'Final Step'; }
+  }
+  function markDone(){
+    const h = $('hero'); h.classList.add('done');
+    $('heroK').textContent = 'Complete'; $('heroT').textContent = 'Thank You'; $('progBar').style.strokeDashoffset = 0;
+    $('badgeIcon').innerHTML = '<path d="M5 12.5l4.5 4.5L19 7.5"/>';
+  }
+  function resetHero(){
+    const h = $('hero'); h.classList.remove('done');
+    $('badgeIcon').innerHTML = '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>';
+  }
+  $('heroX').addEventListener('click', () => $('hero').classList.remove('done'));
+
+  /* ================= The interview script ================= */
+  const first = () => (A.name || '').split(' ')[0];
+  const Q = {
+    async position(){
+      await say('Anong <b>position</b> ang gusto mong i-apply?');
+      A.position = await askChips([{ label: '&#128667; Driver', value: 'Driver' }, { label: '&#129520; Helper', value: 'Helper' }]);
+      progress();
+    },
+    async name(){
+      await say('Ano ang <b>buong pangalan</b> mo?');
+      A.name = await askText({ placeholder: 'hal. Juan Dela Cruz', validate: v => v.length < 3 ? 'Pakisulat ang buo mong pangalan.' : null });
+      progress();
+    },
+    async age(){
+      await say('Salamat, <b>' + esc(first()) + '</b>! Ilang taon ka na?');
+      A.age = await askText({ type: 'number', inputmode: 'numeric', placeholder: 'hal. 32', optional: true, min: 18, max: 80,
+        validate: v => (isNaN(v) || v < 18 || v > 80) ? 'Pakilagay ang edad sa pagitan ng 18 at 80.' : null });
+      progress();
+    },
+    async contact(){
+      await say('Anong <b>contact number</b> mo? Dito ka namin tatawagan o ite-text.');
+      A.contact = await askText({ type: 'tel', inputmode: 'numeric', placeholder: '09XXXXXXXXX',
+        validate: v => v.replace(/\D/g, '').length < 10 ? 'Hmm, parang kulang ang number. Pakisubukan ulit (hal. 09XXXXXXXXX).' : null });
+      progress();
+    },
+    async email(){
+      await say('May <b>email</b> ka ba? Padadalhan ka namin ng confirmation. Kung wala, i-tap lang ang <i>Wala</i>.');
+      A.email = await askText({ type: 'email', inputmode: 'email', placeholder: 'hal. juan@gmail.com', optional: true, skipLabel: 'Wala',
+        validate: v => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? 'Mali yata ang email. Pakisuri (hal. juan@gmail.com).' : null });
+      progress();
+    },
+    async address(){
+      await say('Saan ka nakatira? Piliin muna ang <b>Province</b>.');
+      const p = await askSelect('Province', (ok, fail) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => fail(e.message)).getProvinces(), true);
+      if (!p) { A.address = { province: '', city: '', barangay: '' }; return progress(); }
+      await say('Anong <b>Town / City</b>?', null, 500);
+      const c = await askSelect('Town / City', (ok, fail) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => fail(e.message)).getCities(p.code), true);
+      let b = null;
+      if (c) {
+        await say('At anong <b>Barangay</b>?', null, 500);
+        b = await askSelect('Barangay', (ok, fail) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => fail(e.message)).getBarangays(c.code), true);
+      }
+      A.address = { province: p.name, city: c ? c.name : '', barangay: b ? b.name : '' };
+      progress();
+    },
+    async idPhoto(){
+      await say('Pwede mo bang i-upload ang litrato ng iyong <b>Driver\'s License o Valid ID</b>? (UMID, SSS, PhilHealth, Postal, Passport, atbp.)');
+      A.idPhoto = await askFile();
+      await say(A.idPhoto ? 'Natanggap ko na ang litrato. &#128077;' : 'Sige, pwede mo ring dalhin sa office.', null, 500);
+      progress();
+    },
+    async licenseNo(){
+      await say('Ano ang <b>License No.</b> mo?');
+      A.licenseNo = await askText({ placeholder: 'hal. N01-23-456789', optional: true });
+      progress();
+    },
+    async years(){
+      await say('<b>Ilang taon</b> ka nang nagmamaneho?');
+      A.years = await askText({ type: 'number', inputmode: 'decimal', placeholder: 'hal. 10', optional: true, min: 0, max: 60,
+        validate: v => (isNaN(v) || v < 0 || v > 60) ? 'Pakilagay ang bilang ng taon (0–60).' : null });
+      progress();
+    },
+    async trucks(){
+      await say('Anong mga <b>truck</b> ang naimaneho mo na? Piliin lahat ng applicable, tapos i-tap ang <i>Tapos na</i>.');
+      A.trucks = await askMulti(['10W', '6W', 'DP Truck', 'Trailer', 'Bus', 'Jeep'], A.trucks);
+      progress();
+    }
+  };
+  const LABEL = { position: 'Position', name: 'Pangalan', age: 'Edad', contact: 'Contact #', email: 'Email', address: 'Address', idPhoto: 'ID Photo', licenseNo: 'License No.', years: 'Taon sa pagmamaneho', trucks: 'Truck' };
+  function val(k){
+    const v = A[k];
+    if (k === 'address') return [v.barangay ? 'Brgy. ' + v.barangay : '', v.city, v.province].filter(Boolean).join(', ') || '—';
+    if (k === 'idPhoto') return v ? '&#10003; ' + esc(v.name) : '—';
+    if (k === 'trucks') return v && v.length ? v.join(', ') : '—';
+    if (k === 'years') return v ? v + ' yrs' : '—';
+    return v ? esc(v) : '—';
+  }
+
+  async function startInterview(){
+    for (const k in A) delete A[k];
+    resetHero(); progress();
+    await say('Magandang araw! &#128075; Ako ang <b>HR ng J. Magtalas Trucking Inc.</b> Salamat sa interes mong sumali sa amin.', null, 900);
+    await say('May ilang tanong lang ako — mga <b>2 minuto</b> lang ito. Sagutin mo lang dito sa chat. &#128522;', null, 1100);
+    for (const k of FIELDS()) await Q[k]();
+    // position may have added driver questions after the loop above started
+    for (const k of FIELDS()) if (A[k] === undefined) await Q[k]();
+    await review();
+  }
+
+  async function review(){
+    progress();
+    const rows = FIELDS().map(k => '<b>' + LABEL[k] + '</b><span>' + val(k) + '</span>').join('');
+    await say('Salamat, <b>' + esc(first()) + '</b>! Ito ang mga sagot mo:<div class="sum">' + rows + '</div>');
+    await say('<b>Isusumite ko na ba</b> ang application mo?', null, 600);
+    const c = await askChips([{ label: '&#9989; Isumite na', value: 'go', gold: true }, { label: '&#9999;&#65039; May babaguhin', value: 'edit', ghost: true }]);
+    if (c === 'edit') {
+      await say('Alin ang gusto mong baguhin?', null, 500);
+      const k = await askChips(FIELDS().map(k => ({ label: LABEL[k], value: k })));
+      const was = A.position;
+      await Q[k]();
+      if (k === 'position' && was !== A.position) for (const f of FIELDS()) if (A[f] === undefined) await Q[f]();
+      return review();
+    }
+    await submit();
+  }
+
+  async function submit(){
+    const isDriver = A.position === 'Driver';
+    const payload = {
+      position: A.position, name: A.name, age: A.age || '', contact: A.contact, email: A.email || '',
+      province: A.address.province, city: A.address.city, barangay: A.address.barangay,
+      licenseNo: isDriver ? (A.licenseNo || '') : '',
+      licenseFile: A.idPhoto ? { name: A.idPhoto.name, mimeType: A.idPhoto.mimeType, data: A.idPhoto.data } : null,
+      truck: isDriver ? (A.trucks || []) : [], years: isDriver ? (A.years || '') : ''
+    };
+    const t = document.createElement('div'); t.className = 'msg bot typing';
+    t.innerHTML = '<div class="av"><img src="' + LOGO + '" alt=""></div><div class="bub"><span class="dots"><i></i><i></i><i></i></span></div>';
+    chat.appendChild(t); scrollDown();
+    google.script.run
+      .withSuccessHandler(async res => {
+        t.remove(); sfx.success(); markDone();
+        bubble('&#10003; <b>Natanggap na namin ang iyong application</b> (No. <b>#' + res.no + '</b>). Tatawagan o ite-text ka ng aming HR para sa susunod na hakbang.', false, 'okay');
+        if (res.emailed) await say('&#128231; Pinadalhan ka rin namin ng confirmation sa <b>' + esc(payload.email) + '</b>. Kung wala sa Inbox, tingnan sa Spam o Promotions.', null, 900);
+        await say('Ihanda na ang iyong mga requirements (lisensya, NBI/police clearance, atbp.). Kung may tanong, tumawag lang sa amin:<br>' +
+          '<a class="callbtn" href="tel:09666308079">&#128222; Tumawag: 0966 630 8079</a>', null, 900);
+        await say('Maraming salamat, <b>' + esc(first()) + '</b>! Kita-kits sa JMTI. &#128667;&#128170;', null, 800);
+        chips([{ label: '&#128260; Bagong Application', value: 'again', ghost: true }], () => { closeQuick(); chat.innerHTML = '<div class="day"><span>' + esc($('dayLbl').textContent) + '</span></div>'; startInterview(); });
+      })
+      .withFailureHandler(async err => {
+        t.remove(); sfx.error();
+        await say('Pasensya na, may problema sa pag-save: <b>' + esc(err.message || 'May error.') + '</b>', 'oops', 300);
+        const c = await askChips([{ label: '&#128260; Subukan ulit', value: 'retry', gold: true }, { label: '&#9999;&#65039; May babaguhin', value: 'edit', ghost: true }]);
+        if (c === 'retry') return submit();
+        await say('Alin ang gusto mong baguhin?', null, 500);
+        const k = await askChips(FIELDS().map(k => ({ label: LABEL[k], value: k })));
+        await Q[k](); review();
+      })
+      .submitApplicant(payload);
+  }
+
+  progress();
+</script>
+</body>
+</html>
